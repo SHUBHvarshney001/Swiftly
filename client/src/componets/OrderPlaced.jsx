@@ -71,29 +71,6 @@ export default function OrderPlaced() {
     }, 1200);
   }, []);
   
-  useEffect(() => {
-    if (orderDetails && userDetails) {
-      fetch("http://localhost:8080/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: `${userDetails.firstName} ${userDetails.lastName}`,
-          email: userDetails.email,
-          address: userDetails.address,
-          items: cart,
-          total: orderDetails.total,
-          orderId: orderDetails.orderId,
-          date: orderDetails.date,
-        }),
-      })
-      .then(res => res.json())
-      .then(data => console.log("Order sent to admin:", data))
-      .catch(err => console.error("Failed to notify admin:", err));
-    }
-  }, [orderDetails, userDetails]);
-  
   // Update cart and orderDetails in localStorage when they change
   useEffect(() => {
     if (cart.length) {

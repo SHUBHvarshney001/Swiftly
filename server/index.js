@@ -13,7 +13,6 @@ import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import subCategoryRoutes from './routes/subCategoryRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config();
 
@@ -64,7 +63,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/subcategories', subCategoryRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/orders', orderRoutes);
 
 const PORT = process.env.PORT || 8080;
 

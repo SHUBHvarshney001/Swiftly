@@ -127,9 +127,6 @@ const AddCategory = () => {
                 <Link to="/add-subcategory">Add SubCategory</Link>
               </li>
               <li>
-                  <Link to="/orders">Orders</Link>
-            </li>
-              <li>
                 <Link to="/login">Profile</Link>
               </li>
               <li>
