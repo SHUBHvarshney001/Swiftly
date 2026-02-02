@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/blinkit-logo.png";
+import logo from "../assets/ChatGPT Image Dec 4, 2025, 01_33_25 AM.jpg";
 import banner from "../assets/banner.jpg";
 import cartIcon from "../assets/cart.png";
 import promo1 from "../assets/3 (1).avif";
@@ -125,20 +125,22 @@ const Home = () => {
     <div className={`home-page ${showConfirmation ? "blurred" : ""}`}>
       <header className="header">
         <div className="left-section">
+          
           <Link to="/">
             <img
               src={logo}
-              alt="Blinkit Logo"
+              alt=" Logo"
               className="logo"
+
             />
+
           </Link>
-          <div className="delivery-info">
-            <strong>Delivery in 9 minutes</strong>
-            <span>Mathura, Uttar Pradesh, India</span>
-          </div>
+          
+          <h3>Search items</h3>
         </div>
         <div className="search-bar">
-          <input type="text" placeholder='Search "egg"' />
+          
+          <input type="text" placeholder='"egg"' />
         </div>
         <div className="header-actions">
           {isAdmin ? (
@@ -247,7 +249,7 @@ const Home = () => {
                       <button className="quantity-button" onClick={() => decreaseQuantity(item._id)}>
                         -
                       </button>
-                      <span>{item.quantity}</span>
+                      <span><h5>{item.quantity}</h5></span>
                       <button className="quantity-button" onClick={() => increaseQuantity(item._id)}>
                         +
                       </button>

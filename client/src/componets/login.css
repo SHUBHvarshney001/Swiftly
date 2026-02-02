@@ -4,23 +4,24 @@ body {
 }
 
 body.login-signup {
-  background-image: url("Untitled design (1).png"); /* Adjust path if needed */
+  background-image: url("../assets/login_bg.png"); /* Updated image path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 30px;
+  padding: 8px 20px; /* reduced padding */
   background-color: #ffffff;
-  border-bottom: 2px solid #e0e0e0;
-  height: 60px;
+  border-bottom: 2px solid #770808;
+  height: auto; /* let content determine height */
 }
 
 .logo {
-  height: 170px;
+  height: 30px; /* reduced logo height for a smaller header */
   width: auto;
 }
 
@@ -39,7 +40,7 @@ body.login-signup {
 }
 
 .cart-button {
-  background-color: #28a745;
+  background-color: #64056d;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -58,7 +59,7 @@ body.login-signup {
 }
 
 .cart-button:hover {
-  background-color: #218838;
+  background-color: #f6f4f7;
 }
 
 .login-container {
@@ -66,7 +67,7 @@ body.login-signup {
   margin: 50px auto;
   padding: 20px;
   background: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 8px rgb(245, 243, 243);
   border-radius: 10px;
   text-align: center;
 }
@@ -92,18 +93,20 @@ body.login-signup {
   box-sizing: border-box;
 }
 
-.login-button {
+/* .login-button {
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: #08010c;
+  display: flex;
+  text-align: center;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 
 .login-button:hover {
-  background-color: #0056b3;
+  background-color: #4e0570;
 }
 
 .footer {

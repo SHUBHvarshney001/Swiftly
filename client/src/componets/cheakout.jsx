@@ -1,6 +1,6 @@
 import { useEffect, useState ,useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/blinkit-logo.png";
+import logo from "../assets/swiftly-logo.png";
 import cartIcon from "../assets/cart.png";
 import paytm from "../assets/rupay (4).png";
 import shopPay from "../assets/rupay (2).png";
@@ -13,6 +13,8 @@ import confirmationMp3 from "../assets/newk.mp4"; // Import MP3 file
 export default function Checkout() {
   const [showAlert, setShowAlert] = useState(false);
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+  const [showOrderText, setShowOrderText] = useState(false);
+
   const continueButtonRef = useRef(null); 
   const [username, setUsername] = useState("");
 
@@ -217,7 +219,7 @@ export default function Checkout() {
         <header className="header">
           <div className="left-section">
             <a href="/">
-              <img src={logo || "/placeholder.svg"} alt="Blinkit Logo" className="logo" />
+              <img src={logo || "/placeholder.svg"} alt="Swiftly Logo" className="logo" />
             </a>
             <div className="delivery-info">
               <strong>Delivery in 9 minutes</strong>

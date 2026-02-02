@@ -1,4 +1,4 @@
-# Blinkit
-This is a clone of Blinkit
+# Swiftly
+This is a clone of Swiftly
 <br>
 E commerce

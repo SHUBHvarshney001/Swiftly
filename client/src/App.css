@@ -10,12 +10,12 @@ header {
   align-items: center;
   padding: 5px 30px;
   background-color: #ffffff;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid #410505;
   height: 60px;
 }
 
 .logo {
-  height: 50px;
+  height: 30px;
   width: auto;
 }
 
@@ -27,7 +27,7 @@ header {
 }
 
 .cart-button {
-  background-color: #28a745;
+  background-color: #7A3FF2;
   color: white;
   border: none;
   padding: 12px 25px;

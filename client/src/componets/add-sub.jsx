@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/blinkit-logo.png";
+import logo from "../assets/swiftly-logo.png";
 import cart from "../assets/cart.png";
 import wideAssortment from "../assets/Wide_Assortment.png";
 import "./add-sub.css";

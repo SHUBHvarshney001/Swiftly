@@ -76,7 +76,7 @@ body.home {
 .cart-button {
   display: flex;
   align-items: center;
-  background-color: #008c45;
+  background-color: #64056d;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -194,7 +194,7 @@ body.home {
 }
 
 .add-product-page .cart-button {
-  background-color: #228b22;
+  background-color: #64056d;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -294,7 +294,7 @@ body.home {
 
 .add-product-page .add-product-form input:focus,
 .add-product-page .add-product-form select:focus {
-  border-color: #007bff;
+  border-color: #4e0570;
   outline: none;
 }
 

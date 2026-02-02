@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react';
 import axios from "axios";
 import "./Login.css";
-import logo from "../assets/blinkit-logo.png";
+import logo from "../assets/swiftly-logo.png";
 import cart from "../assets/cart.png";
 
 const Signup = () => {
@@ -49,7 +49,7 @@ const Signup = () => {
 
   return (
     <div className="login-page">
-      <header className="header">
+      {/* <header className="header">
         <img src={logo} alt="Logo" className="logo" />
         <div className="search-bar">
           <input type="text" placeholder="Search 'egg'" />
@@ -58,7 +58,7 @@ const Signup = () => {
           <img src={cart} alt="cart" />
           My Cart
         </button>
-      </header>
+      </header> */}
       <div className="login-container">
         <h1>Sign Up</h1>
         <form onSubmit={handleSubmit}>
@@ -102,11 +102,11 @@ const Signup = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-          <button className="login-button">Sign Up</button>
+          <button className="login-button" display:flex>Sign Up</button>
         </form>
-        <p>{message}</p>
+        <p><b>{message}</b></p>
         <p>
-          Already have an account? <a href="/login">Login</a>
+         <strong> Already have an account? <a href="/login">Login</a></strong>
         </p>
       </div>
     </div>

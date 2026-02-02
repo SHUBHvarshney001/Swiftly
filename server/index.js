@@ -64,7 +64,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/subcategories', subCategoryRoutes);
 app.use('/api/payment', paymentRoutes);
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   // ✅ start the HTTP server, not app.listen

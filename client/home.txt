@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate here
 import "./Home.css";
-import logo from "../assets/blinkit-logo.png";
+import logo from "../assets/swiftly-logo.png";
 import banner from "../assets/banner.jpg";
 import cart from "../assets/cart.png";
 import wideAssortment from "../assets/Wide_Assortment.png";
@@ -29,7 +29,7 @@ const Home = () => {
     <div className="home-page">
       {/* Header Section */}
       <header className="header">
-        <img src={logo} alt="Blinkit Logo" className="logo" />
+        <img src={logo} alt="Swiftly Logo" className="logo" />
         <div className="delivery-info">
           <strong>Delivery in 12 minutes</strong>
           <span>Mathura, Uttar Pradesh, India</span>
