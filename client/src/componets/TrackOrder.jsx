@@ -32,48 +32,10 @@ const TrackOrder = () => {
   const storeMarkerRef = useRef(null);
   const polylineRef = useRef(null);
 
-  const [storeLatLng, setStoreLatLng] = useState(null);
+  // Hardcoded Warehouse Location (Mathura, UP)
+  const [storeLatLng] = useState([27.4925, 77.6736]);
   const [driverLatLng, setDriverLatLng] = useState(null);
   const [currentAddress, setCurrentAddress] = useState("Locating your partner...");
-
-  // Geocode Delivery Address from LocalStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("formData");
-    console.log("Checking LocalStorage for delivery address...", storedUser);
-
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      // Construct a clean query
-      const fullQuery = [userData.address, userData.city, userData.state, userData.country]
-        .filter(Boolean)
-        .join(", ");
-
-      console.log("Geocoding delivery destination:", fullQuery);
-
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&limit=1`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            console.log("Delivery destination found:", data[0].lat, data[0].lon);
-            setStoreLatLng([Number.parseFloat(data[0].lat), Number.parseFloat(data[0].lon)]);
-          } else {
-            console.warn("Full address not found, trying fallback...");
-            // Fallback: Try just city and country
-            const fallbackQuery = `${userData.city || ""}, ${userData.country || "India"}`;
-            return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackQuery)}&limit=1`)
-              .then(res => res.json())
-              .then(fallbackData => {
-                if (fallbackData && fallbackData.length > 0) {
-                  setStoreLatLng([Number.parseFloat(fallbackData[0].lat), Number.parseFloat(fallbackData[0].lon)]);
-                }
-              });
-          }
-        })
-        .catch(err => console.error("Geocoding error:", err));
-    } else {
-      console.warn("No formData found in LocalStorage");
-    }
-  }, []);
 
   useEffect(() => {
     const mapContainer = document.getElementById("map-container");
@@ -82,7 +44,7 @@ const TrackOrder = () => {
       mapRef.current = L.map(mapContainer, {
         zoomControl: true,
         fadeAnimation: true,
-      }).setView([20.5937, 78.9629], 5);
+      }).setView(storeLatLng, 13);
 
       // Using CARTO Voyager tiles with correct URL to avoid SSL errors
       console.log("Initializing map with CARTO Voyager tiles...");
@@ -99,9 +61,8 @@ const TrackOrder = () => {
       if (!storeMarkerRef.current) {
         storeMarkerRef.current = L.marker(storeLatLng, { icon: storeIcon })
           .addTo(mapRef.current)
-          .bindPopup("<b>Delivery Destination</b>")
+          .bindPopup("<b>Swiftly Warehouse (Mathura)</b>")
           .openPopup();
-        mapRef.current.setView(storeLatLng, 13);
       }
     }
 
