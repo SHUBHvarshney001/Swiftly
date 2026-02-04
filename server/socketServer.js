@@ -16,7 +16,7 @@ export const initSocketServer = (httpServer) => {
 
     socket.on("send-location", (data) => {
       const { orderId, latitude, longitude } = data;
-      io.emit("recived-location", { id: socket.id, orderId, latitude, longitude });
+      io.emit("receive-location", { id: socket.id, orderId, latitude, longitude });
     });
 
     socket.on("disconnect", () => {
