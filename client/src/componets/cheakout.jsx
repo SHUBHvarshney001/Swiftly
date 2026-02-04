@@ -218,9 +218,7 @@ export default function Checkout() {
               <span>Mathura, Uttar Pradesh, India</span>
             </div>
           </div>
-          <div className="search-bar">
-            <input type="text" placeholder='Search "egg"' />
-          </div>
+
           <div className="header-actions">
             {username ? (
               <div className="user-info">

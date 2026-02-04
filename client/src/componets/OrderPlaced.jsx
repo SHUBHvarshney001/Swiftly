@@ -12,7 +12,7 @@ export default function OrderPlaced() {
   const [userDetails, setUserDetails] = useState(null);
   const [showGif, setShowGif] = useState(false);
   const [showOrderText, setShowOrderText] = useState(false);
-  const [cart, setCart] = useState(() => {
+  const [cart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
     console.log("Loaded cart from localStorage:", savedCart);
     return savedCart ? JSON.parse(savedCart) : [];
@@ -43,9 +43,9 @@ export default function OrderPlaced() {
       const { subtotal, total, shipping } = JSON.parse(storedTotal);
 
       setOrderDetails((prevDetails) => ({
-        ...(prevDetails || {}), // ✅ fallback when null
+        ...prevDetails,
         total: {
-          ...(prevDetails?.total || {}),
+          ...prevDetails?.total,
           subtotal,
           grandTotal: total,
           shipping,
@@ -180,9 +180,7 @@ export default function OrderPlaced() {
             <span>Mathura, Uttar Pradesh, India</span>
           </div>
         </div>
-        <div className="search-bar">
-          <input type="text" placeholder='Search "egg"' />
-        </div>
+
         <div className="header-actions">
           <button className="login-button">Login</button>
           <button className="cart-button">
@@ -219,8 +217,8 @@ export default function OrderPlaced() {
           </div>
 
           <div className="order-product-list">
-            {cart?.map((item, index) => (
-              <div key={index} className="order-product-card">
+            {cart?.map((item) => (
+              <div key={item._id || item.name} className="order-product-card">
                 <img src={item.image || "/placeholder.svg"} alt={item.name} className="order-product-image" />
                 <div className="order-product-info">
                   <h3>{item.name}</h3>

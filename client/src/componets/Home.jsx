@@ -23,7 +23,7 @@ const Home = () => {
     }
     return [];
   });
-  
+
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,8 +64,8 @@ const Home = () => {
       localStorage.setItem(`${username}_cart`, JSON.stringify(cart));
     }
   }, [cart, username]);
-  
-  
+
+
   useEffect(() => {
     if (showConfirmation) {
       const timer = setTimeout(() => {
@@ -125,7 +125,7 @@ const Home = () => {
     <div className={`home-page ${showConfirmation ? "blurred" : ""}`}>
       <header className="header">
         <div className="left-section">
-          
+
           <Link to="/">
             <img
               src={logo}
@@ -135,13 +135,10 @@ const Home = () => {
             />
 
           </Link>
-          
+
           <h3>Search items</h3>
         </div>
-        <div className="search-bar">
-          
-          <input type="text" placeholder='"egg"' />
-        </div>
+
         <div className="header-actions">
           {isAdmin ? (
             <div className="user-info">
@@ -273,7 +270,7 @@ const Home = () => {
 
       {showConfirmation && (
         <div className="confirmation-popup">
-          <video src={confirmationMp3} autoPlay className="confirmation-gifs"/>
+          <video src={confirmationMp3} autoPlay className="confirmation-gifs" />
         </div>
       )}
     </div>

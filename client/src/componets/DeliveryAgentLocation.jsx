@@ -3,8 +3,9 @@ const socket = io("http://localhost:8080");
 
 const orderId = "ORD-82517"; // Use actual order ID used in URL
 
-let lat = 51.505;
-let lng = -0.09;
+// Mathura warehouse coordinates: 27.4925, 77.6736
+let lat = 27.4925;
+let lng = 77.6736;
 
 setInterval(() => {
   lat += 0.0001;

@@ -77,7 +77,12 @@ const TrackOrder = () => {
             .then(data => {
               const addressString = data.display_name || "Active Delivery Partner";
               setCurrentAddress(addressString);
-              socket.emit("send-location", { address: addressString, orderId });
+              socket.emit("send-location", {
+                address: addressString,
+                latitude,
+                longitude,
+                orderId
+              });
               setDriverLatLng([latitude, longitude]);
             });
         },
@@ -86,16 +91,26 @@ const TrackOrder = () => {
       );
     }
 
-    socket.on("receive-location", ({ address, orderId: incomingId }) => {
-      console.log(`Received address string to track: ${address}`);
-      if (incomingId === orderId && address) {
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.length > 0) {
-              setDriverLatLng([Number.parseFloat(data[0].lat), Number.parseFloat(data[0].lon)]);
-            }
-          });
+    socket.on("receive-location", (data) => {
+      const { address, latitude, longitude, orderId: incomingId } = data;
+
+      if (incomingId === orderId) {
+        if (latitude && longitude) {
+          // Use direct coordinates if available (more efficient)
+          setDriverLatLng([latitude, longitude]);
+          if (address) setCurrentAddress(address);
+        } else if (address) {
+          // Fallback to geocoding if only address is provided
+          console.log(`Received address string to track: ${address}`);
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.length > 0) {
+                setDriverLatLng([Number.parseFloat(data[0].lat), Number.parseFloat(data[0].lon)]);
+                setCurrentAddress(address);
+              }
+            });
+        }
       }
     });
 
