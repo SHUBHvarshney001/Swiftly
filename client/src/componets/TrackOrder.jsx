@@ -5,17 +5,23 @@ import { io } from "socket.io-client";
 
 const socket = io("http://localhost:8080");
 
-// Custom icons
+// Custom icons with fallbacks
 const driverIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/1048/1048329.png",
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const storeIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/606/606363.png",
-  iconSize: [40, 40],
-  iconAnchor: [20, 40],
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const TrackOrder = () => {
@@ -27,14 +33,15 @@ const TrackOrder = () => {
   const polylineRef = useRef(null);
 
   const [storeLatLng, setStoreLatLng] = useState(null);
-  const [currentAddress, setCurrentAddress] = useState("Locating...");
+  const [driverLatLng, setDriverLatLng] = useState(null);
+  const [currentAddress, setCurrentAddress] = useState("Locating your partner...");
 
-  // 1. Geocode the Store address (from form data)
+  // Geocode Store Address
   useEffect(() => {
     const storedUser = localStorage.getItem("formData");
     if (storedUser) {
       const userData = JSON.parse(storedUser);
-      const query = `${userData.address}, ${userData.city}, ${userData.country || "India"}`;
+      const query = `${userData.address || ""}, ${userData.city || ""}, ${userData.country || "India"}`;
 
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
         .then(res => res.json())
@@ -56,19 +63,22 @@ const TrackOrder = () => {
         fadeAnimation: true,
       }).setView([20.5937, 78.9629], 5);
 
-      L.tileLayer("https://{s}.tile.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        attribution: '&copy; OpenStreetMap contributors'
+      // Using CARTO Voyager tiles with correct URL to avoid SSL errors
+      console.log("Initializing map with CARTO Voyager tiles...");
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
       }).addTo(mapRef.current);
 
       mapRef.current.invalidateSize();
     }
 
-    // Add Store Marker (Start Location)
     if (storeLatLng && mapRef.current) {
       if (!storeMarkerRef.current) {
         storeMarkerRef.current = L.marker(storeLatLng, { icon: storeIcon })
           .addTo(mapRef.current)
-          .bindPopup("<b>Pickup Point (From Form)</b>")
+          .bindPopup("<b>Form Address (Pickup Point)</b>")
           .openPopup();
         mapRef.current.setView(storeLatLng, 13);
       }
@@ -80,16 +90,13 @@ const TrackOrder = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
 
-          // Reverse geocode laptop location to get address string
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
             .then(res => res.json())
             .then(data => {
-              const addressString = data.display_name;
+              const addressString = data.display_name || "Active Delivery Partner";
               setCurrentAddress(addressString);
-              // Emit only the address string as requested
               socket.emit("send-location", { address: addressString, orderId });
-
-              updatePath(latitude, longitude);
+              setDriverLatLng([latitude, longitude]);
             });
         },
         (error) => console.error("Geolocation error:", error),
@@ -97,47 +104,14 @@ const TrackOrder = () => {
       );
     }
 
-    const updatePath = (driverLat, driverLon) => {
-      if (!mapRef.current) return;
-      const driverLatLng = [driverLat, driverLon];
-
-      // Update Driver Marker
-      if (!driverMarkerRef.current) {
-        driverMarkerRef.current = L.marker(driverLatLng, { icon: driverIcon })
-          .addTo(mapRef.current)
-          .bindPopup("<b>Delivery Partner (Current Location)</b>");
-      } else {
-        driverMarkerRef.current.setLatLng(driverLatLng);
-      }
-
-      // Draw path from Store to Current Location
-      if (storeLatLng) {
-        if (!polylineRef.current) {
-          polylineRef.current = L.polyline([storeLatLng, driverLatLng], {
-            color: "#45a049",
-            weight: 5,
-            dashArray: "10, 20",
-            opacity: 0.8
-          }).addTo(mapRef.current);
-        } else {
-          polylineRef.current.setLatLngs([storeLatLng, driverLatLng]);
-        }
-
-        const bounds = L.latLngBounds([storeLatLng, driverLatLng]);
-        mapRef.current.fitBounds(bounds, { padding: [80, 80], animate: true });
-      }
-    };
-
-    // Handle incoming address strings from other clients
     socket.on("receive-location", ({ address, orderId: incomingId }) => {
+      console.log(`Received address string to track: ${address}`);
       if (incomingId === orderId && address) {
-        console.log("Received address string to track:", address);
-        // Geocode the received address string to find it on the map
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
           .then(res => res.json())
           .then(data => {
             if (data && data.length > 0) {
-              updatePath(parseFloat(data[0].lat), parseFloat(data[0].lon));
+              setDriverLatLng([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
             }
           });
       }
@@ -149,28 +123,75 @@ const TrackOrder = () => {
     };
   }, [orderId, storeLatLng]);
 
+  // Handle Path and Markers Updates
+  useEffect(() => {
+    if (!mapRef.current || !driverLatLng) return;
+
+    if (!driverMarkerRef.current) {
+      driverMarkerRef.current = L.marker(driverLatLng, { icon: driverIcon })
+        .addTo(mapRef.current)
+        .bindPopup("<b>Delivery Partner</b>");
+    } else {
+      driverMarkerRef.current.setLatLng(driverLatLng);
+    }
+
+    if (storeLatLng) {
+      if (!polylineRef.current) {
+        polylineRef.current = L.polyline([storeLatLng, driverLatLng], {
+          color: "#FFD700",
+          weight: 4,
+          dashArray: "10, 15",
+          opacity: 0.8
+        }).addTo(mapRef.current);
+      } else {
+        polylineRef.current.setLatLngs([storeLatLng, driverLatLng]);
+      }
+
+      const bounds = L.latLngBounds([storeLatLng, driverLatLng]);
+      mapRef.current.fitBounds(bounds, { padding: [80, 80], animate: true });
+    } else {
+      mapRef.current.setView(driverLatLng, 15);
+    }
+  }, [driverLatLng, storeLatLng]);
+
   return (
-    <div className="track-order-container" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto", textAlign: "center" }}>
-      <h2 style={{ marginBottom: "20px", color: "#333" }}>Tracking Order: <span style={{ color: "#45a049" }}>{orderId}</span></h2>
+    <div className="track-order-container" style={{ padding: "10px", maxWidth: "1200px", margin: "0 auto", textAlign: "center" }}>
+      <header style={{ marginBottom: "20px" }}>
+        <h2 style={{ fontSize: "2rem", fontWeight: "bold", color: "#2d3436" }}>
+          Tracking Order: <span style={{ color: "#fab1a0" }}>#{orderId}</span>
+        </h2>
+      </header>
+
       <div
         id="map-container"
         style={{
-          height: "600px",
+          height: "550px",
           width: "100%",
-          borderRadius: "20px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+          borderRadius: "24px",
+          boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
           overflow: "hidden",
-          border: "2px solid #eee"
+          border: "4px solid #fff",
+          backgroundColor: "#f0f0f0"
         }}
       ></div>
-      <div style={{ marginTop: "20px", padding: "20px", backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 10px rgba(0,0,0,0.05)" }}>
-        <p style={{ color: "#333", fontSize: "1rem", margin: "0" }}>
-          <b>Tracking Address:</b> <span style={{ color: "#45a049" }}>{currentAddress}</span>
+
+      <footer style={{ marginTop: "20px", padding: "20px", background: "#fff", borderRadius: "20px", boxShadow: "0 5px 15px rgba(0,0,0,0.05)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+          <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#fab1a0", animation: "pulse 1.5s infinite" }}></div>
+          <span style={{ fontWeight: "600", color: "#636e72" }}>Live Status</span>
+        </div>
+        <p style={{ color: "#2d3436", fontSize: "1.1rem", marginTop: "10px", lineHeight: "1.4" }}>
+          <strong>Partner Location:</strong> {currentAddress}
         </p>
-        <p style={{ color: "#666", fontSize: "0.85rem", marginTop: "10px" }}>
-          Simulating path from the <b>Form Address</b> to your <b>Current Laptop Location</b>.
-        </p>
-      </div>
+      </footer>
+
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 177, 160, 0.7); }
+          70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(250, 177, 160, 0); }
+          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 177, 160, 0); }
+        }
+      `}</style>
     </div>
   );
 };
