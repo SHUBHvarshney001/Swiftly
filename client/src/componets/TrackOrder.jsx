@@ -36,21 +36,42 @@ const TrackOrder = () => {
   const [driverLatLng, setDriverLatLng] = useState(null);
   const [currentAddress, setCurrentAddress] = useState("Locating your partner...");
 
-  // Geocode Store Address
+  // Geocode Delivery Address from LocalStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("formData");
+    console.log("Checking LocalStorage for delivery address...", storedUser);
+
     if (storedUser) {
       const userData = JSON.parse(storedUser);
-      const query = `${userData.address || ""}, ${userData.city || ""}, ${userData.country || "India"}`;
+      // Construct a clean query
+      const fullQuery = [userData.address, userData.city, userData.state, userData.country]
+        .filter(Boolean)
+        .join(", ");
 
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+      console.log("Geocoding delivery destination:", fullQuery);
+
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&limit=1`)
         .then(res => res.json())
         .then(data => {
           if (data && data.length > 0) {
-            setStoreLatLng([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+            console.log("Delivery destination found:", data[0].lat, data[0].lon);
+            setStoreLatLng([Number.parseFloat(data[0].lat), Number.parseFloat(data[0].lon)]);
+          } else {
+            console.warn("Full address not found, trying fallback...");
+            // Fallback: Try just city and country
+            const fallbackQuery = `${userData.city || ""}, ${userData.country || "India"}`;
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackQuery)}&limit=1`)
+              .then(res => res.json())
+              .then(fallbackData => {
+                if (fallbackData && fallbackData.length > 0) {
+                  setStoreLatLng([Number.parseFloat(fallbackData[0].lat), Number.parseFloat(fallbackData[0].lon)]);
+                }
+              });
           }
         })
-        .catch(err => console.error("Store geocoding error:", err));
+        .catch(err => console.error("Geocoding error:", err));
+    } else {
+      console.warn("No formData found in LocalStorage");
     }
   }, []);
 
@@ -78,7 +99,7 @@ const TrackOrder = () => {
       if (!storeMarkerRef.current) {
         storeMarkerRef.current = L.marker(storeLatLng, { icon: storeIcon })
           .addTo(mapRef.current)
-          .bindPopup("<b>Form Address (Pickup Point)</b>")
+          .bindPopup("<b>Delivery Destination</b>")
           .openPopup();
         mapRef.current.setView(storeLatLng, 13);
       }
@@ -111,7 +132,7 @@ const TrackOrder = () => {
           .then(res => res.json())
           .then(data => {
             if (data && data.length > 0) {
-              setDriverLatLng([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+              setDriverLatLng([Number.parseFloat(data[0].lat), Number.parseFloat(data[0].lon)]);
             }
           });
       }
