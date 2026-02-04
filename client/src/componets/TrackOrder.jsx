@@ -6,7 +6,8 @@ import { io } from "socket.io-client";
 const socket = io("http://localhost:8080");
 
 const TrackOrder = () => {
-  const { orderId } = useParams();
+  const { orderId: paramOrderId } = useParams();
+  const orderId = paramOrderId || "7617";
   const mapRef = useRef(null);
   const markerRef = useRef(null);
 

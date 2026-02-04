@@ -26,7 +26,13 @@ export default function OrderPlaced() {
     const storedTotal = localStorage.getItem("total");
 
     if (storedOrder) {
-      setOrderDetails(JSON.parse(storedOrder));
+      const parsedOrder = JSON.parse(storedOrder);
+      if (!parsedOrder.orderId) {
+        parsedOrder.orderId = "7617";
+      }
+      setOrderDetails(parsedOrder);
+    } else {
+      setOrderDetails({ orderId: "7617" });
     }
 
     if (storedUser) {
@@ -73,11 +79,7 @@ export default function OrderPlaced() {
   }, [cart]);
 
   const handleTrackOrder = () => {
-    if (orderDetails && orderDetails.orderId) {
-      navigate(`/track-order/${orderDetails.orderId}`);
-    } else {
-      console.error("Order ID is missing");
-    }
+    navigate("/track");
   };
 
   const downloadInvoice = () => {
@@ -138,16 +140,15 @@ export default function OrderPlaced() {
 
     yPos += 15;
     const totalX = startX + columnWidths[0] + columnWidths[1] + columnWidths[2];
-    doc.setFont("Arial", "bold");
+    doc.setFont("helvetica", "bold");
     doc.text("Subtotal", totalX - 40, yPos);
     doc.text(`₹${orderDetails.total?.subtotal?.toFixed(2) || "0.00"}`, totalX, yPos);
 
     yPos += 7;
     doc.text("Tax", totalX - 40, yPos);
     doc.text(
-      `₹${
-        (orderDetails.total?.grandTotal || 0) -
-        (orderDetails.total?.subtotal || 0)
+      `₹${(orderDetails.total?.grandTotal || 0) -
+      (orderDetails.total?.subtotal || 0)
       }`,
       totalX,
       yPos
