@@ -129,9 +129,9 @@ export default function OrderPlaced() {
       xPos = startX;
       doc.text(item.name, xPos, yPos);
       doc.text(item.quantity.toString(), xPos + columnWidths[0], yPos);
-      doc.text(`₹${item.price.toFixed(2)}`, xPos + columnWidths[0] + columnWidths[1], yPos);
+      doc.text(`Rs.${item.price.toFixed(2)}`, xPos + columnWidths[0] + columnWidths[1], yPos);
       doc.text(
-        `₹${(item.price * item.quantity).toFixed(2)}`,
+        `Rs.${(item.price * item.quantity).toFixed(2)}`,
         xPos + columnWidths[0] + columnWidths[1] + columnWidths[2],
         yPos
       );
@@ -142,12 +142,12 @@ export default function OrderPlaced() {
     const totalX = startX + columnWidths[0] + columnWidths[1] + columnWidths[2];
     doc.setFont("helvetica", "bold");
     doc.text("Subtotal", totalX - 40, yPos);
-    doc.text(`₹${orderDetails.total?.subtotal?.toFixed(2) || "0.00"}`, totalX, yPos);
+    doc.text(`Rs.${orderDetails.total?.subtotal?.toFixed(2) || "0.00"}`, totalX, yPos);
 
     yPos += 7;
     doc.text("Tax", totalX - 40, yPos);
     doc.text(
-      `₹${(orderDetails.total?.grandTotal || 0) -
+      `Rs.${(orderDetails.total?.grandTotal || 0) -
       (orderDetails.total?.subtotal || 0)
       }`,
       totalX,
@@ -157,7 +157,7 @@ export default function OrderPlaced() {
     yPos += 7;
     doc.setFontSize(14);
     doc.text("Total", totalX - 40, yPos);
-    doc.text(`₹${orderDetails.total?.grandTotal?.toFixed(2) || "0.00"}`, totalX, yPos);
+    doc.text(`Rs.${orderDetails.total?.grandTotal?.toFixed(2) || "0.00"}`, totalX, yPos);
     yPos += 15;
 
     doc.setFontSize(10);
